@@ -1,0 +1,8 @@
+# Standby on/off
+standby_mode = 'on'
+
+# Connection to Master
+primary_conninfo = 'host=LLL.MMM.NNN.OOO port=5432 user=replication sslmode=verify-ca sslcert=/ssl/clients/replication.crt sslkey=/ssl/clients/replication.key sslrootcert=/ssl/root.crt'
+
+# If you create the below file this server turns into a Master
+trigger_file = '/usr/local/pgsql/data/master'

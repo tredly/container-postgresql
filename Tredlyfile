@@ -1,0 +1,148 @@
+#############################
+#### Tredlyfile VERSION NUMBER
+versionNumber=1.1.13.0
+#############################
+ 
+# You can use variables within this file which should be interpreted by your Code repository, e.g. gitlabs or Bamboo.
+# You can also configure Tredly-Build to interpret values or override values based on Partition.
+ 
+################################################################################
+#### CONTAINER NAME AND CONTAINER GROUP
+ 
+## Container Name (required | unique per Partition | allowed=text, integer, underscore and dash)
+# This should contain your AppName and version number
+containerName=postgres
+  
+## Container Group (optional, allowed= text, integers, underscore and dash)
+# Only use this option if this Container is part of a group of containers
+containerGroup=
+## Container Options within Container Group
+# Container start order (optional, required if containerGroup is entered, allowed=1-99 | default=1)
+# Order in which this container is started within your containerGroup. 1 = most important 99 = least important.
+# Please note that if you update one container within your containerGroup, all containers will be rebuilt
+startOrder=
+## Can Container be replicated within your containerGroup? (optional | required if containerGroup is entered | allowed=yes/no | default=no)
+replicate=
+  
+## INFO
+# Hostname of container is containerName
+ 
+###########################################################################################################
+#### BUILD OPTIONS
+## Should Container be published on push to Tredly Host OR require manual publishing?
+# On push to Tredly-Host container will be validated and built. If publish=yes, the updated container will replace the current container.
+# To automatically build integration branch but manually build prod branch, you can use a variable.
+# (required, | allowed=yes/no | default=yes)
+publish=no
+ 
+###########################################################################################################
+#### TECHNICAL OPTIONS
+## Container options (optional | one per line | allowed=allow.sysvipc=1, allow.raw_sockets=true | default=blank)
+# PostgreSQL requires allow.sysvipc=1 | To allow ping set allow.raw_sockets=true. Both these options may have security implications.
+technicalOptions=
+ 
+###########################################################################################################
+### RESOURCE LIMITS
+## Limit the Containers resource limits (optional).
+# It is recommended that use them so that a misconfigured container or buggy software does not effect other containers.
+# Container Maximum CPU in cores/percent (optional | allowed=integer + % | default=unlimited)
+maxCpu=
+# Container hard drive size in GB (optional | allowed=integer or unlimited | default=unlimited)
+maxHdd=
+# Container Maximum RAM in GB (optional | allowed=integer or unlimited | default=unlimited)
+maxRam=
+ 
+ 
+##########################################################################################################
+#### FIREWALL AND PROXY CONFIGURATION
+ 
+## HTTP/HTTPS (layer7) PROXY CONFIGURATION
+# URL(s) the container services (optional | one per line).
+# If URL has urlCert entered proxy will automatically redirect HTTP traffic to HTTPS URL. If urlCert is not specified connections to HTTPS will result in 404 error.
+ 
+# URL 1
+url=
+# Redirect the above URL to another URL, both URLs must be configured in URL section.
+urlRedirect=
+# SSL configuration for URL. UrlCert is folder containing server.crt and server.key for this URL (optional (HTTP only) | allowed=folderName | default=blank)
+urlCert=
+# Configure the above URL to handle web sockets (optional | allowed yes/no | default=no)
+urlWebsocket=
+# Set the max upload size for this URL, where m = megabytes, g = gigabytes (optional, allowed=1m - 2g | default 1m)
+urlMaxFileSize=
+ 
+# If your container services a URL make sure you put port 443 as a tcpInPort option so this containers firewall is open
+# on this port and can receive traffic from the internal HTTP proxy.
+ 
+## IPV4 PROXY (layer4)
+# Layer4 proxy allows the container to use the Hosts external IP and forward traffic to your container on specific ports (optional, default=no)
+# layer4Proxy cannot be used on port 80/443 (HTTP/HTTPS) as internal Proxy handles this traffic.
+# if layer4Proxy=yes tcpInPort and udpInPort options will be forwarded directly to your container from the Hosts external IP. 
+# Make sure the ports selected in the tcpInPort and udpInPort options are available on the Host running this container.
+layer4Proxy=
+ 
+## FIREWALL
+# Incoming and outgoing Ports
+# Required if you want the container to be able to communicate with other container or the outside world (allowed=integer, any or blank | any=allPorts)
+# One port per line, tcp 80,443 outgoing and UDP 53 outgoing are required.
+tcpInPort=5432
+udpInPort=
+tcpOutPort=80
+tcpOutPort=443
+udpOutPort=53
+ 
+## IPV4 WHITELIST
+# Restrict traffic to your container (optional | allowed= IPv4 address, subnet | default=any).
+# Allowing communications between Containers in a Partition is done using containerGroup
+# Examples below.
+ipv4Whitelist=
+ 
+##########################################################################################################
+#### CUSTOM DNS SERVERS (optional | allowed=IP address or blank)
+# You can specify alternative DNS servers for your container to use.
+# If customDNS is blank or not specified then the internal DNS server will be used (recommended).
+customDNS=
+   
+##########################################################################################################
+## ORDER OF OPERATION
+# This section is run in order of entry
+# Options available in this section:
+# 1. Container Start (onStart) and Stop (onStop) commands (one per line, optional)
+# 2. Package (software) installation (one per line permitted, optional). Package dependencies are also installed
+# 3. File/Folder mapping (one per line, optional, folders will be created if they do not exist)
+# 4. Persistent storage mount point (required if persistentStorage selected, where to mount persistent storage within container)
+# 5. SSL Folder - folder where the SSL certs will be put in the Container (you must create the folder)
+ 
+sslFolder=
+ 
+onStart= mkdir /var/log/pgsql
+
+onStart= chmod -R 1777 /tmp
+
+installPackage=rsync
+installPackage=postgresql94-server
+installPackage=vim-lite
+
+onStart= echo postgresql_enable=\\"YES\\" >> /etc/rc.conf
+onStart= mkdir /usr/local/pgsql/ssl
+onStart= /usr/local/etc/rc.d/postgresql initdb
+
+fileFolderMapping= /partition/ssl /usr/local/pgsql/
+fileFolderMapping= postgresql.conf /usr/local/pgsql/data/
+fileFolderMapping= pg_hba.conf /usr/local/pgsql/data/
+fileFolderMapping= recovery.done /usr/local/pgsql/data/
+
+# PostgreSQL requires the server key to be installed before starting
+onStart= chown pgsql:pgsql /var/log/pgsql
+onStart= chown -R pgsql:pgsql /usr/local/pgsql/ssl
+onStart= chmod 0600 /usr/local/pgsql/ssl/server.key
+onStart= service postgresql start
+onStart= mkdir /usr/local/pgsql/data/xlogs_master
+
+############################################
+## ON CONTAINER STOP COMMANDS
+## Commands run when container stops or is terminated (one per line, optional)
+onStop=service postgresql stop
+ 
+## END ORDER OF ENTRY
+##########################################################################################################
