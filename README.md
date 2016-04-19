@@ -4,7 +4,7 @@ For Tredly-Build Version 0.9.0
 
 **Installation**
 
-This container requires Tredly-Host to build and run it, https://github.com/vuid-com/tredly-build
+This container requires Tredly-Host to build and run it, https://github.com/vuid-com/tredly-host
 
 **Modifying container options**
 

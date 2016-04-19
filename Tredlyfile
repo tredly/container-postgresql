@@ -1,6 +1,6 @@
 #############################
 #### Tredlyfile VERSION NUMBER
-versionNumber=1.1.13.0
+versionNumber=0.9.0
 #############################
  
 # You can use variables within this file which should be interpreted by your Code repository, e.g. gitlabs or Bamboo.
