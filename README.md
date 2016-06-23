@@ -1,23 +1,23 @@
 ## PostgreSQL Container for Tredly
 
-Version 1.0.2 June 18 2016
+Version 1.0.3 June 24 2016
 
 ## Installation
 
-Requires Tredly 1.0.0-rc.1 <https://github.com/tredly/tredly> or later
+Requires Tredly 1.0.0 <https://github.com/tredly/tredly> or later
 
 ### Modifying container options
 
-By default, the container name is "postgres". Change this by changing containerName in the Tredlyfile prior to building this container.
+By default, the container name is "postgres". Change this by changing containerName in `tredly.yaml` prior to building this container.
 
-Many other options can be changed in the Tredlyfile
+Many other options can be changed in `tredly.yaml`
 
 
 ### Configuring PostgreSQL
 
-postgresql.conf is configured with some example configurations. Please change them for your environment.
-pg_hba.conf is configured with some example configurations. You should change these to suit your environment.
-recovery.done exists as an example for Master/Slave configuration of PostgreSQL
+`postgresql.conf` is configured with some example configurations. Please change them for your environment.
+`pg_hba.conf` is configured with some example configurations. You should change these to suit your environment.
+`recovery.done` exists as an example for Master/Slave configuration of PostgreSQL
 
 You will need to create your own SSL keys for Postgres.
 

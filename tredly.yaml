@@ -1,0 +1,91 @@
+---
+  container:
+    technicalOptions: {}
+    replicate: false
+    proxy:
+      layer4Proxy: false
+      layer7Proxy: []
+    resourceLimits:
+      maxRam: "unlimited"
+      maxHdd: "unlimited"
+      maxCpu: "unlimited"
+    startOrder: 1
+    customDNS: []
+    operations:
+      onCreate:
+        -
+          type: "exec"
+          value: "mkdir /var/log/pgsql"
+        -
+          type: "exec"
+          value: "chmod -R 1777 /tmp"
+        -
+          type: "installPackage"
+          value: "rsync"
+        -
+          type: "installPackage"
+          value: "postgresql94-server"
+        -
+          type: "installPackage"
+          value: "vim-lite"
+        -
+          type: "exec"
+          value: "sysrc postgresql_enable=yes"
+        -
+          type: "exec"
+          value: "mkdir /usr/local/pgsql/ssl"
+        -
+          type: "exec"
+          value: "/usr/local/etc/rc.d/postgresql initdb"
+        -
+          target: "/usr/local/pgsql/"
+          type: "fileFolderMapping"
+          source: "/partition/ssl"
+        -
+          target: "/usr/local/pgsql/data/"
+          type: "fileFolderMapping"
+          source: "postgresql.conf"
+        -
+          target: "/usr/local/pgsql/data/"
+          type: "fileFolderMapping"
+          source: "pg_hba.conf"
+        -
+          target: "/usr/local/pgsql/data/"
+          type: "fileFolderMapping"
+          source: "recovery.done"
+        -
+          type: "exec"
+          value: "chown pgsql:pgsql /var/log/pgsql"
+        -
+          type: "exec"
+          value: "chown -R pgsql:pgsql /usr/local/pgsql/ssl"
+        -
+          type: "exec"
+          value: "chmod 0600 /usr/local/pgsql/ssl/server.key"
+        -
+          type: "exec"
+          value: "service postgresql start"
+        -
+          type: "exec"
+          value: "mkdir /usr/local/pgsql/data/xlogs_master"
+      onStop:
+        -
+          type: "exec"
+          value: "service postgresql stop"
+    firewall:
+      allowPorts:
+        udp:
+          out:
+            - 53
+          in: []
+        tcp:
+          out:
+            - 80
+            - 443
+          in:
+            - 5432
+      ipv4Whitelist: []
+    name: "postgres"
+    buildOptions:
+      publish: false
+    compatibleWith: "1.0.0"
