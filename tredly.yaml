@@ -88,4 +88,4 @@
     name: "postgres"
     buildOptions:
       publish: false
-    compatibleWith: "1.0.0"
+    compatibleWith: "1.1.0"

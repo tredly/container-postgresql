@@ -1,10 +1,10 @@
 ## PostgreSQL Container for Tredly
 
-Version 1.0.3 June 24 2016
+Version 1.0.4 August 16 2016
 
 ## Installation
 
-Requires Tredly 1.0.0 <https://github.com/tredly/tredly> or later
+Requires Tredly 1.1.0 <https://github.com/tredly/tredly> or later
 
 ### Modifying container options
 
